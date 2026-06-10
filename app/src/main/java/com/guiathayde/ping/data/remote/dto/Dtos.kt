@@ -32,3 +32,7 @@ data class MessageResponse(
     val timestamp: Long,
     val status: String
 )
+
+data class CreateConversationRequest(
+    @SerializedName("participant_id") val participantId: String
+)

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.guiathayde.ping.ui.auth.AuthViewModel
 import com.guiathayde.ping.ui.conversations.ConversationsViewModel
+import com.guiathayde.ping.ui.search.SearchViewModel
 
 
 object AppViewModelProvider {
@@ -20,6 +21,10 @@ object AppViewModelProvider {
                 pingApplication().container.conversationsRepository,
                 pingApplication().container.authRepository
             )
+        }
+
+        initializer {
+            SearchViewModel(pingApplication().container.searchRepository)
         }
 
     }

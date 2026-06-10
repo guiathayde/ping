@@ -20,10 +20,6 @@ class ConversationsViewModel(
     var isLoading by mutableStateOf(false)
     var connectionError by mutableStateOf(false)
 
-    init {
-        loadConversations()
-    }
-
     fun loadConversations() {
         viewModelScope.launch {
             isLoading = true

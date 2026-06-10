@@ -55,7 +55,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("Search") {
-                            SearchScreen()
+                            SearchScreen(
+                                onBack = { navController.popBackStack() },
+                                onConversationCreated = { navController.popBackStack() }
+                            )
                         }
                     }
                 }

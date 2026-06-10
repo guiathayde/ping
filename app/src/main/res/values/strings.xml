@@ -18,4 +18,9 @@
 
     <!-- Search -->
     <string name="search_users">Procurar usuarios</string>
+    <string name="back">Voltar</string>
+    <string name="search_placeholder">Nome de usuario</string>
+    <string name="search_button">Buscar</string>
+    <string name="search_empty">Nenhum usuario encontrado.</string>
+    <string name="search_error">Erro ao buscar usuarios. Verifique sua conexao.</string>
 </resources>

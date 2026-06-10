@@ -5,6 +5,7 @@ import android.content.Context
 import com.guiathayde.ping.data.remote.TokenManager
 import com.guiathayde.ping.data.repository.AuthRepository
 import com.guiathayde.ping.data.repository.ConversationsRepository
+import com.guiathayde.ping.data.repository.SearchRepository
 
 class PingApplication : Application() {
 
@@ -27,5 +28,9 @@ class AppContainer(private val context: Context) {
 
     val conversationsRepository: ConversationsRepository by lazy {
         ConversationsRepository(tokenManager)
+    }
+
+    val searchRepository: SearchRepository by lazy {
+        SearchRepository(tokenManager)
     }
 }
