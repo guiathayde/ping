@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.guiathayde.ping.ui.auth.AuthScreen
 import com.guiathayde.ping.ui.conversations.ConversationsScreen
+import com.guiathayde.ping.ui.search.SearchScreen
 import com.guiathayde.ping.ui.theme.PingTheme
 
 class MainActivity : ComponentActivity() {
@@ -36,11 +37,25 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("Auth") {
                             AuthScreen(
-                                onLoginSuccess = { navController.navigate("Conversations") }
+                                onLoginSuccess = {
+                                    navController.navigate("Conversations") {
+                                        popUpTo("Auth") { inclusive = true }
+                                    }
+                                }
                             )
                         }
                         composable("Conversations") {
-                            ConversationsScreen()
+                            ConversationsScreen(
+                                onSearchClick = { navController.navigate("Search") },
+                                onLogout = {
+                                    navController.navigate("Auth") {
+                                        popUpTo("Conversations") { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+                        composable("Search") {
+                            SearchScreen()
                         }
                     }
                 }

@@ -8,4 +8,14 @@
     <string name="auth_sign_in">Entrar</string>
     <string name="auth_error_fields_required">Preencha todos os campos.</string>
     <string name="auth_error_login_failed">Erro ao fazer login. Verifique sua conexao.</string>
+
+    <!-- Conversations -->
+    <string name="conversations">Conversas</string>
+    <string name="logout">Sair</string>
+    <string name="conversations_empty">Nenhuma conversa ainda.</string>
+    <string name="conversations_error">Erro ao carregar as conversas. Verifique sua conexao.</string>
+    <string name="conversations_no_messages">Sem mensagens</string>
+
+    <!-- Search -->
+    <string name="search_users">Procurar usuarios</string>
 </resources>

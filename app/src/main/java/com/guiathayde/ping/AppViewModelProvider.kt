@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.guiathayde.ping.ui.auth.AuthViewModel
+import com.guiathayde.ping.ui.conversations.ConversationsViewModel
 
 
 object AppViewModelProvider {
@@ -12,6 +13,13 @@ object AppViewModelProvider {
 
         initializer {
             AuthViewModel(pingApplication().container.authRepository)
+        }
+
+        initializer {
+            ConversationsViewModel(
+                pingApplication().container.conversationsRepository,
+                pingApplication().container.authRepository
+            )
         }
 
     }

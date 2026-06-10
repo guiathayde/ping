@@ -8,4 +8,14 @@
     <string name="auth_sign_in">Sign in</string>
     <string name="auth_error_fields_required">Please fill in all fields.</string>
     <string name="auth_error_login_failed">Login failed. Check your connection.</string>
+
+    <!-- Conversations -->
+    <string name="conversations">Conversations</string>
+    <string name="logout">Log out</string>
+    <string name="conversations_empty">No conversations yet.</string>
+    <string name="conversations_error">Failed to load conversations. Check your connection.</string>
+    <string name="conversations_no_messages">No messages</string>
+
+    <!-- Search -->
+    <string name="search_users">Search users</string>
 </resources>
