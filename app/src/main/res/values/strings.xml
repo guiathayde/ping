@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Ping</string>
+
+    <!-- Auth -->
+    <string name="auth_subtitle">Converse com seus amigos de forma simples e rapida.</string>
+    <string name="auth_display_name">Nome</string>
+    <string name="auth_username">Nome de usuario</string>
+    <string name="auth_sign_in">Entrar</string>
+    <string name="auth_error_fields_required">Preencha todos os campos.</string>
+    <string name="auth_error_login_failed">Erro ao fazer login. Verifique sua conexao.</string>
 </resources>
