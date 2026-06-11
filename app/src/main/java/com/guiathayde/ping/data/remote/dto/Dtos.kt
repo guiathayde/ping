@@ -36,3 +36,7 @@ data class MessageResponse(
 data class CreateConversationRequest(
     @SerializedName("participant_id") val participantId: String
 )
+
+data class SendMessageRequest(
+    val content: String
+)

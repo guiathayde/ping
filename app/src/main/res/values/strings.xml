@@ -23,4 +23,9 @@
     <string name="search_button">Buscar</string>
     <string name="search_empty">Nenhum usuario encontrado.</string>
     <string name="search_error">Erro ao buscar usuarios. Verifique sua conexao.</string>
+
+    <!-- Chat -->
+    <string name="chat_placeholder">Mensagem</string>
+    <string name="chat_send">Enviar</string>
+    <string name="chat_error">Erro de conexao. Tente novamente.</string>
 </resources>

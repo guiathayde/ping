@@ -40,6 +40,7 @@ import com.guiathayde.ping.data.remote.dto.ConversationResponse
 fun ConversationsScreen(
     modifier: Modifier = Modifier,
     viewModel: ConversationsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    onConversationClick: (String, String, String) -> Unit = { _, _, _ -> },
     onSearchClick: () -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
@@ -115,7 +116,19 @@ fun ConversationsScreen(
             } else {
                 LazyColumn {
                     items(viewModel.conversations) { conversation ->
-                        ConversationCard(conversation)
+                        ConversationCard(
+                            conversation = conversation,
+                            onClick = {
+                                val participant = conversation.participant
+                                if (participant != null) {
+                                    onConversationClick(
+                                        conversation.id,
+                                        participant.displayName,
+                                        participant.username
+                                    )
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -124,8 +137,9 @@ fun ConversationsScreen(
 }
 
 @Composable
-fun ConversationCard(conversation: ConversationResponse) {
+fun ConversationCard(conversation: ConversationResponse, onClick: () -> Unit = {}) {
     Card(
+        onClick = onClick,
         modifier = Modifier
             .padding(vertical = 4.dp)
             .fillMaxWidth(),

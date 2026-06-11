@@ -1,5 +1,6 @@
 package com.guiathayde.ping
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.guiathayde.ping.ui.auth.AuthScreen
+import com.guiathayde.ping.ui.chat.ChatScreen
 import com.guiathayde.ping.ui.conversations.ConversationsScreen
 import com.guiathayde.ping.ui.search.SearchScreen
 import com.guiathayde.ping.ui.theme.PingTheme
@@ -46,6 +48,11 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("Conversations") {
                             ConversationsScreen(
+                                onConversationClick = { conversationId, name, username ->
+                                    navController.navigate(
+                                        "Chat/$conversationId/${Uri.encode(name)}/${Uri.encode(username)}"
+                                    )
+                                },
                                 onSearchClick = { navController.navigate("Search") },
                                 onLogout = {
                                     navController.navigate("Auth") {
@@ -58,6 +65,17 @@ class MainActivity : ComponentActivity() {
                             SearchScreen(
                                 onBack = { navController.popBackStack() },
                                 onConversationCreated = { navController.popBackStack() }
+                            )
+                        }
+                        composable("Chat/{conversationId}/{participantName}/{participantUsername}") { backStackEntry ->
+                            ChatScreen(
+                                conversationId = backStackEntry.arguments
+                                    ?.getString("conversationId") ?: "",
+                                participantName = backStackEntry.arguments
+                                    ?.getString("participantName") ?: "",
+                                participantUsername = backStackEntry.arguments
+                                    ?.getString("participantUsername") ?: "",
+                                onBack = { navController.popBackStack() }
                             )
                         }
                     }
