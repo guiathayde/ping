@@ -22,6 +22,22 @@ class ChatViewModel(private val chatRepository: ChatRepository) : ViewModel() {
 
     private var conversationId = ""
 
+    init {
+        observeIncomingMessages()
+    }
+
+    private fun observeIncomingMessages() {
+        viewModelScope.launch {
+            chatRepository.incomingMessages.collect { message ->
+                if (message.conversationId == conversationId &&
+                    messages.none { it.id == message.id }
+                ) {
+                    messages.add(message)
+                }
+            }
+        }
+    }
+
     fun loadMessages(conversationId: String) {
         this.conversationId = conversationId
         viewModelScope.launch {
@@ -47,7 +63,9 @@ class ChatViewModel(private val chatRepository: ChatRepository) : ViewModel() {
             connectionError = false
             try {
                 val newMessage = chatRepository.sendMessage(conversationId, content)
-                messages.add(newMessage)
+                if (messages.none { it.id == newMessage.id }) {
+                    messages.add(newMessage)
+                }
                 messageText = ""
             } catch (e: Exception) {
                 e.printStackTrace()

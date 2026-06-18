@@ -20,6 +20,25 @@ class ConversationsViewModel(
     var isLoading by mutableStateOf(false)
     var connectionError by mutableStateOf(false)
 
+    init {
+        observeIncomingMessages()
+    }
+
+    private fun observeIncomingMessages() {
+        viewModelScope.launch {
+            conversationsRepository.incomingMessages.collect { message ->
+                val index = conversations.indexOfFirst { it.id == message.conversationId }
+                if (index >= 0) {
+                    val updated = conversations[index].copy(lastMessage = message)
+                    conversations.removeAt(index)
+                    conversations.add(0, updated)
+                } else if (!isLoading) {
+                    loadConversations()
+                }
+            }
+        }
+    }
+
     fun loadConversations() {
         viewModelScope.launch {
             isLoading = true
