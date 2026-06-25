@@ -1,5 +1,8 @@
 package com.guiathayde.ping.data.remote.dto
 
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class LoginRequest(
@@ -24,8 +27,9 @@ data class ConversationResponse(
     @SerializedName("last_message") val lastMessage: MessageResponse?
 )
 
+@Entity(tableName = "messages", indices = [Index("conversationId")])
 data class MessageResponse(
-    val id: String,
+    @PrimaryKey val id: String,
     @SerializedName("conversation_id") val conversationId: String,
     @SerializedName("sender_id") val senderId: String,
     val content: String,

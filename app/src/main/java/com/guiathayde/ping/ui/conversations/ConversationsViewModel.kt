@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.guiathayde.ping.data.remote.dto.ConversationResponse
+import com.guiathayde.ping.data.local.entity.Conversation
 import com.guiathayde.ping.data.repository.AuthRepository
 import com.guiathayde.ping.data.repository.ConversationsRepository
 import kotlinx.coroutines.launch
@@ -16,25 +16,15 @@ class ConversationsViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    var conversations = mutableStateListOf<ConversationResponse>()
+    val conversations = mutableStateListOf<Conversation>()
     var isLoading by mutableStateOf(false)
     var connectionError by mutableStateOf(false)
 
     init {
-        observeIncomingMessages()
-    }
-
-    private fun observeIncomingMessages() {
         viewModelScope.launch {
-            conversationsRepository.incomingMessages.collect { message ->
-                val index = conversations.indexOfFirst { it.id == message.conversationId }
-                if (index >= 0) {
-                    val updated = conversations[index].copy(lastMessage = message)
-                    conversations.removeAt(index)
-                    conversations.add(0, updated)
-                } else if (!isLoading) {
-                    loadConversations()
-                }
+            conversationsRepository.observeConversations().collect { cached ->
+                conversations.clear()
+                conversations.addAll(cached)
             }
         }
     }
@@ -44,9 +34,7 @@ class ConversationsViewModel(
             isLoading = true
             connectionError = false
             try {
-                val rConversations = conversationsRepository.getConversations()
-                conversations.clear()
-                rConversations.forEach { conversations.add(it) }
+                conversationsRepository.refreshConversations()
             } catch (e: Exception) {
                 e.printStackTrace()
                 connectionError = true

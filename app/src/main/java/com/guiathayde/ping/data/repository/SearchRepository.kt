@@ -1,5 +1,8 @@
 package com.guiathayde.ping.data.repository
 
+import com.guiathayde.ping.data.local.dao.ConversationDao
+import com.guiathayde.ping.data.local.dao.MessageDao
+import com.guiathayde.ping.data.local.entity.toConversation
 import com.guiathayde.ping.data.remote.ApiService
 import com.guiathayde.ping.data.remote.RetrofitInstance
 import com.guiathayde.ping.data.remote.TokenManager
@@ -7,7 +10,11 @@ import com.guiathayde.ping.data.remote.dto.ConversationResponse
 import com.guiathayde.ping.data.remote.dto.CreateConversationRequest
 import com.guiathayde.ping.data.remote.dto.UserResponse
 
-class SearchRepository(private val tokenManager: TokenManager) {
+class SearchRepository(
+    private val tokenManager: TokenManager,
+    private val conversationDao: ConversationDao,
+    private val messageDao: MessageDao
+) {
 
     private val client: ApiService = RetrofitInstance.api
 
@@ -16,9 +23,12 @@ class SearchRepository(private val tokenManager: TokenManager) {
     }
 
     suspend fun createConversation(participantId: String): ConversationResponse {
-        return client.createConversation(
+        val conversation = client.createConversation(
             "Bearer " + tokenManager.token,
             CreateConversationRequest(participantId)
         )
+        conversationDao.upsert(conversation.toConversation())
+        conversation.lastMessage?.let { messageDao.upsert(it) }
+        return conversation
     }
 }

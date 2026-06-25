@@ -109,7 +109,7 @@ fun ChatScreen(
                 .padding(innerPadding)
                 .imePadding()
         ) {
-            if (viewModel.isLoading) {
+            if (viewModel.isLoading && viewModel.messages.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .weight(1f)

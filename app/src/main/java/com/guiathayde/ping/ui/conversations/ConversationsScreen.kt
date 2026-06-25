@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.guiathayde.ping.AppViewModelProvider
 import com.guiathayde.ping.R
-import com.guiathayde.ping.data.remote.dto.ConversationResponse
+import com.guiathayde.ping.data.local.entity.Conversation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,14 +96,14 @@ fun ConversationsScreen(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            if (viewModel.isLoading) {
+            if (viewModel.isLoading && viewModel.conversations.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
                 }
-            } else if (viewModel.connectionError) {
+            } else if (viewModel.connectionError && viewModel.conversations.isEmpty()) {
                 Text(
                     text = stringResource(R.string.conversations_error),
                     color = MaterialTheme.colorScheme.error
@@ -119,14 +119,11 @@ fun ConversationsScreen(
                         ConversationCard(
                             conversation = conversation,
                             onClick = {
-                                val participant = conversation.participant
-                                if (participant != null) {
-                                    onConversationClick(
-                                        conversation.id,
-                                        participant.displayName,
-                                        participant.username
-                                    )
-                                }
+                                onConversationClick(
+                                    conversation.id,
+                                    conversation.participantDisplayName,
+                                    conversation.participantUsername
+                                )
                             }
                         )
                     }
@@ -137,7 +134,7 @@ fun ConversationsScreen(
 }
 
 @Composable
-fun ConversationCard(conversation: ConversationResponse, onClick: () -> Unit = {}) {
+fun ConversationCard(conversation: Conversation, onClick: () -> Unit = {}) {
     Card(
         onClick = onClick,
         modifier = Modifier
@@ -147,12 +144,12 @@ fun ConversationCard(conversation: ConversationResponse, onClick: () -> Unit = {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = conversation.participant?.displayName ?: "",
+                text = conversation.participantDisplayName,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = conversation.lastMessage?.content
+                text = conversation.lastMessageContent
                     ?: stringResource(R.string.conversations_no_messages),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

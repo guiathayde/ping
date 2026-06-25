@@ -8,11 +8,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guiathayde.ping.data.remote.dto.MessageResponse
 import com.guiathayde.ping.data.repository.ChatRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class ChatViewModel(private val chatRepository: ChatRepository) : ViewModel() {
 
-    var messages = mutableStateListOf<MessageResponse>()
+    val messages = mutableStateListOf<MessageResponse>()
     var messageText by mutableStateOf("")
     var isLoading by mutableStateOf(false)
     var connectionError by mutableStateOf(false)
@@ -21,32 +22,24 @@ class ChatViewModel(private val chatRepository: ChatRepository) : ViewModel() {
         get() = chatRepository.myUserId
 
     private var conversationId = ""
-
-    init {
-        observeIncomingMessages()
-    }
-
-    private fun observeIncomingMessages() {
-        viewModelScope.launch {
-            chatRepository.incomingMessages.collect { message ->
-                if (message.conversationId == conversationId &&
-                    messages.none { it.id == message.id }
-                ) {
-                    messages.add(message)
-                }
-            }
-        }
-    }
+    private var observeJob: Job? = null
 
     fun loadMessages(conversationId: String) {
         this.conversationId = conversationId
+
+        observeJob?.cancel()
+        observeJob = viewModelScope.launch {
+            chatRepository.observeMessages(conversationId).collect { cached ->
+                messages.clear()
+                messages.addAll(cached)
+            }
+        }
+
         viewModelScope.launch {
             isLoading = true
             connectionError = false
             try {
-                val rMessages = chatRepository.getMessages(conversationId)
-                messages.clear()
-                rMessages.forEach { messages.add(it) }
+                chatRepository.refreshMessages(conversationId)
             } catch (e: Exception) {
                 e.printStackTrace()
                 connectionError = true
@@ -58,15 +51,12 @@ class ChatViewModel(private val chatRepository: ChatRepository) : ViewModel() {
     fun sendMessage() {
         val content = messageText.trim()
         if (content == "") return
+        messageText = ""
 
         viewModelScope.launch {
             connectionError = false
             try {
-                val newMessage = chatRepository.sendMessage(conversationId, content)
-                if (messages.none { it.id == newMessage.id }) {
-                    messages.add(newMessage)
-                }
-                messageText = ""
+                chatRepository.sendMessage(conversationId, content)
             } catch (e: Exception) {
                 e.printStackTrace()
                 connectionError = true

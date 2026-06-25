@@ -1,14 +1,19 @@
 package com.guiathayde.ping.data.repository
 
+import com.guiathayde.ping.data.local.AppDatabase
 import com.guiathayde.ping.data.remote.ApiService
 import com.guiathayde.ping.data.remote.RetrofitInstance
 import com.guiathayde.ping.data.remote.TokenManager
 import com.guiathayde.ping.data.remote.WebSocketManager
 import com.guiathayde.ping.data.remote.dto.LoginRequest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class AuthRepository(
     private val tokenManager: TokenManager,
-    private val webSocketManager: WebSocketManager
+    private val webSocketManager: WebSocketManager,
+    private val appDatabase: AppDatabase,
+    private val applicationScope: CoroutineScope
 ) {
 
     private val client: ApiService = RetrofitInstance.api
@@ -34,6 +39,9 @@ class AuthRepository(
     fun logout() {
         webSocketManager.disconnect()
         tokenManager.clear()
+        applicationScope.launch {
+            appDatabase.clearAllTables()
+        }
     }
 
     fun connectIfAuthenticated() {

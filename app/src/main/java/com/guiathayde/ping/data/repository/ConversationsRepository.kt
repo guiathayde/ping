@@ -1,24 +1,31 @@
 package com.guiathayde.ping.data.repository
 
+import com.guiathayde.ping.data.local.dao.ConversationDao
+import com.guiathayde.ping.data.local.dao.MessageDao
+import com.guiathayde.ping.data.local.entity.Conversation
+import com.guiathayde.ping.data.local.entity.toConversation
 import com.guiathayde.ping.data.remote.ApiService
 import com.guiathayde.ping.data.remote.RetrofitInstance
 import com.guiathayde.ping.data.remote.TokenManager
-import com.guiathayde.ping.data.remote.WebSocketManager
-import com.guiathayde.ping.data.remote.dto.ConversationResponse
-import com.guiathayde.ping.data.remote.dto.MessageResponse
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 
 class ConversationsRepository(
     private val tokenManager: TokenManager,
-    private val webSocketManager: WebSocketManager
+    private val conversationDao: ConversationDao,
+    private val messageDao: MessageDao
 ) {
 
     private val client: ApiService = RetrofitInstance.api
 
-    val incomingMessages: SharedFlow<MessageResponse>
-        get() = webSocketManager.incomingMessages
+    fun observeConversations(): Flow<List<Conversation>> =
+        conversationDao.observeConversations()
 
-    suspend fun getConversations(): List<ConversationResponse> {
-        return client.getConversations("Bearer " + tokenManager.token)
+    suspend fun refreshConversations() {
+        val remote = client.getConversations("Bearer " + tokenManager.token)
+        conversationDao.upsertAll(remote.map { it.toConversation() })
+        val lastMessages = remote.mapNotNull { it.lastMessage }
+        if (lastMessages.isNotEmpty()) {
+            messageDao.upsertAll(lastMessages)
+        }
     }
 }
